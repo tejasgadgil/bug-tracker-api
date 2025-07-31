@@ -82,6 +82,12 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.5</version>
 		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>9.3.0</version> <!-- or the latest version, see note below -->
+		</dependency>
+
 
 	</dependencies>
 
