@@ -87,7 +87,11 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<version>9.3.0</version> <!-- or the latest version, see note below -->
 		</dependency>
-
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.1.0</version> <!-- Or a newer version like 3.1.0-M1 -->
+		</dependency>
 
 	</dependencies>
 

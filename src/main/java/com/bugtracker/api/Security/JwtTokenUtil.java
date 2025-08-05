@@ -2,9 +2,9 @@ package com.bugtracker.api.Security;
 
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Encoders;        // For encoding, if needed
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.SignatureAlgorithm; // Only for key generation
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -40,12 +40,12 @@ public class JwtTokenUtil {
 
     private String createToken(Map<String, Object> claims, String subject) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
-        return builder()
+        return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationInMillis))
-                .signWith(key, SIG.HS512)        // NEW signature method!
+                .signWith(key, SignatureAlgorithm.HS512)        // NEW signature method!
                 .compact();
     }
 
@@ -81,7 +81,7 @@ public class JwtTokenUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        // getBody returns Claims
+
     }
 
 

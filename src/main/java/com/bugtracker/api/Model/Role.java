@@ -11,4 +11,20 @@ public class Role {
 
     @Column(unique = true, nullable = false)
     private String name; // ADMIN, DEVELOPER
+
+    public Role(String roleName) {
+        this.name = roleName;
+    }
+    public Role() {
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
+

@@ -6,6 +6,8 @@ import com.bugtracker.api.Model.User;
 import com.bugtracker.api.Repository.RoleRepository;
 import com.bugtracker.api.Repository.UserRepository;
 //import com.bugtracker.api.Security.UserDetailsImpl;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
 
 import com.bugtracker.api.Security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
@@ -16,13 +18,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+public class UserService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    // Constructor injection (important to avoid circular dependencies)
+    public UserService(UserRepository userRepository,
+                       RoleRepository roleRepository,
+                       PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional
     public User registerUser(String username, String email, String rawPassword, String roleName) {
@@ -47,11 +56,11 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        // Return a custom UserDetails implementation or adapt User to UserDetails here
-        return new UserDetailsImpl(user); // You’ll need to define UserDetailsImpl
+        return new UserDetailsImpl(user);
     }
 
 }
