@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.bugtracker.api.Security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,6 +46,10 @@ public class UserService implements UserDetailsService {
         user.setEnabled(true);
         return userRepository.save(user);
 
+    }
+
+    public User findByUsername (String userName){
+        return userRepository.findByUsername(userName);
     }
 
     public boolean existsByUsername(String username) {
