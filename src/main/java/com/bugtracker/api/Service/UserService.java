@@ -3,9 +3,12 @@ package com.bugtracker.api.Service;
 
 import com.bugtracker.api.Model.Role;
 import com.bugtracker.api.Model.User;
+import com.bugtracker.api.Payload.UserUpdateRequest;
 import com.bugtracker.api.Repository.RoleRepository;
 import com.bugtracker.api.Repository.UserRepository;
+import com.bugtracker.api.Payload.SignUpRequest;
 //import com.bugtracker.api.Security.UserDetailsImpl;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 
@@ -17,8 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -33,6 +38,7 @@ public class UserService implements UserDetailsService {
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
 
     @Transactional
     public User registerUser(String username, String email, String rawPassword, String roleName) {
@@ -50,26 +56,59 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public Optional<User> findByUsername (String userName){
-        return userRepository.findByUsername(userName);
-    }
-
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
-
+//
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new UserDetailsImpl(user);
     }
-
-    public Optional<Object> findById(Long assigneeId) {
-        return userRepository.findById(assigneeId)
-                .map(UserDetailsImpl::new);
+//
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+
+    public void updateUser(Long id, UserUpdateRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+
+        if (!user.getUsername().equals(request.getUsername()) && userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username is already taken");
+        }
+        if (!user.getEmail().equals(request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email is already in use");
+        }
+
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        Role role = roleRepository.findByName(request.getRoleName())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        user.setRole(role);
+
+        userRepository.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+
 }

@@ -4,7 +4,11 @@ import com.bugtracker.api.Model.Bug;
 import com.bugtracker.api.Model.PriorityEnum;
 import com.bugtracker.api.Model.StatusEnum;
 import com.bugtracker.api.Model.User;
+import com.bugtracker.api.Payload.BugRequest;
+import com.bugtracker.api.Payload.BugResponse;
+import com.bugtracker.api.Payload.MessageResponse;
 import com.bugtracker.api.Service.BugService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,43 +23,43 @@ public class BugController {
     private BugService bugService;
 
     @GetMapping
-    public ResponseEntity<List<Bug>> getAllBugs(
+    public ResponseEntity<List<BugResponse>> getAllBugs(
             @RequestParam(value = "assigneeId", required = false) Long assigneeId,
             @RequestParam(value = "status", required = false) StatusEnum status,
             @RequestParam(value = "priority", required = false) PriorityEnum priority
     ) {
-        if (assigneeId != null) {
-            return ResponseEntity.ok(bugService.findBugsByAssigneeId(assigneeId));
-        } else if (status != null) {
-            return ResponseEntity.ok(bugService.findBugsByStatus(status));
-        } else if (priority != null) {
-            return ResponseEntity.ok(bugService.findBugsByPriority(priority));
-        } else {
-            return ResponseEntity.ok(bugService.getAllBugs());
-        }
+        List<Bug> bugs = bugService.filterBugs(assigneeId, status, priority);
+        List<BugResponse> response = bugs.stream()
+                .map(bugService::convertToResponse)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Bug> getBugById(@PathVariable Long id) {
-        return ResponseEntity.ok(bugService.getBugById(id));
+    public ResponseEntity<BugResponse> getBugById(@PathVariable Long id) {
+        var bug = bugService.getBugById(id);
+        return ResponseEntity.ok(bugService.convertToResponse(bug));
     }
 
     @PostMapping
-    public ResponseEntity<Bug> createBug(@RequestBody Bug bug, Authentication authentication) {
+    public ResponseEntity<BugResponse> createBug(@RequestBody @Valid BugRequest bugRequest, Authentication authentication) {
         String username = authentication.getName();
-        return ResponseEntity.ok(bugService.createBug(bug, username));
+        var createdBug = bugService.createBugFromRequest(bugRequest, username);
+        return ResponseEntity.status(201).body(bugService.convertToResponse(createdBug));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Bug> updateBug(@PathVariable Long id, @RequestBody Bug bug) {
-        return ResponseEntity.ok(bugService.updateBug(id, bug));
+    public ResponseEntity<BugResponse> updateBug(@PathVariable Long id, @RequestBody @Valid BugRequest bugRequest) {
+        var updatedBug = bugService.updateBugFromRequest(id, bugRequest);
+        return ResponseEntity.ok(bugService.convertToResponse(updatedBug));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBug(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> deleteBug(@PathVariable Long id) {
         bugService.deleteBug(id);
-        return ResponseEntity.ok().body("Bug deleted successfully");
+        return ResponseEntity.ok(new MessageResponse("Bug deleted successfully"));
     }
 
 }
