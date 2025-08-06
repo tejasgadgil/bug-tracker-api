@@ -20,12 +20,12 @@ public class BugController {
 
     @GetMapping
     public ResponseEntity<List<Bug>> getAllBugs(
-            @RequestParam(value = "assignee", required = false) String assigneeUserName,
+            @RequestParam(value = "assigneeId", required = false) Long assigneeId,
             @RequestParam(value = "status", required = false) StatusEnum status,
             @RequestParam(value = "priority", required = false) PriorityEnum priority
     ) {
-        if (assigneeUserName != null) {
-            return ResponseEntity.ok(bugService.findBugsByAssignee(assigneeUserName));
+        if (assigneeId != null) {
+            return ResponseEntity.ok(bugService.findBugsByAssigneeId(assigneeId));
         } else if (status != null) {
             return ResponseEntity.ok(bugService.findBugsByStatus(status));
         } else if (priority != null) {
@@ -35,21 +35,6 @@ public class BugController {
         }
     }
 
-
-//    @GetMapping
-//    public ResponseEntity<List<Bug>> findBugsByAssignee(@RequestBody User assignee) {
-//        return ResponseEntity.ok(bugService.findBugsByAssignee(assignee));
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity<List<Bug>> findBugsByStatus(@RequestBody StatusEnum status) {
-//        return ResponseEntity.ok(bugService.findBugsByStatus(status));
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity<List<Bug>> findBugsByPriority(@RequestBody PriorityEnum priority) {
-//        return ResponseEntity.ok(bugService.findBugsByPriority(priority));
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Bug> getBugById(@PathVariable Long id) {

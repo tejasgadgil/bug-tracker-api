@@ -36,6 +36,10 @@ public class Bug {
     @JoinColumn(name = "assignee_id")
     private User assignee;
 
+    public Bug() {
+        // Default constructor
+    }
+
     public Long getId() {
         return id;
     }

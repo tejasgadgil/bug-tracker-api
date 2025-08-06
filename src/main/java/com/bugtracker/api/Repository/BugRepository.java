@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BugRepository extends JpaRepository<Bug, Long> {
-    Optional<List<Bug>> findByAssignee(User assignee);
+//    Optional<List<Bug>> findByAssignee(User assignee);
     Optional<List<Bug>> findByStatus(StatusEnum status);
     Optional<List<Bug>> findByPriority(PriorityEnum priority);
+    Optional<List<Bug>> findByAssigneeId(Long assigneeId);
 
 }

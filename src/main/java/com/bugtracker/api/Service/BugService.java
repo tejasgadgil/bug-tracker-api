@@ -3,6 +3,7 @@ package com.bugtracker.api.Service;
 import com.bugtracker.api.Model.Bug;
 import com.bugtracker.api.Model.PriorityEnum;
 import com.bugtracker.api.Model.StatusEnum;
+import com.bugtracker.api.Model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -59,10 +60,18 @@ public class BugService {
         bugRepository.deleteById(id);
     }
 
-    public List<Bug> findBugsByAssignee(String assignee) {
-        return bugRepository.findByAssignee(userService.findByUsername(assignee))
-                .orElseThrow(() -> new RuntimeException("Bug not found with assignee: " + assignee));
+//    public List<Bug> findBugsByAssignee(String assignee) {
+//        return bugRepository.findByAssignee(userService.findByUsername(assignee))
+//                .orElseThrow(() -> new RuntimeException("Bug not found with assignee: " + assignee));
+//    }
+
+    public List<Bug> findBugsByAssigneeId(Long assigneeId) {
+//        User assignee = (User) userService.findById(assigneeId)
+//                .orElseThrow(() -> new RuntimeException("Assignee user not found"));
+        return bugRepository.findByAssigneeId(assigneeId)
+                .orElseThrow(() -> new RuntimeException("No bugs found for assignee"));
     }
+
 
     public List<Bug> findBugsByStatus(StatusEnum status) {
         return bugRepository.findByStatus(status)
