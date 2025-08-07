@@ -9,6 +9,7 @@ import com.bugtracker.api.Repository.UserRepository;
 import com.bugtracker.api.Payload.SignUpRequest;
 //import com.bugtracker.api.Security.UserDetailsImpl;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 
@@ -79,6 +80,7 @@ public class UserService implements UserDetailsService {
     }
 
 
+    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
     public void updateUser(Long id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
@@ -104,6 +106,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found with id: " + id);
@@ -111,4 +114,8 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
     }
 
+    public User findUserByUsername(String creatorUsername) {
+        return userRepository.findByUsername(creatorUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }

@@ -7,6 +7,7 @@ import com.bugtracker.api.Model.User;
 import com.bugtracker.api.Payload.BugRequest;
 import com.bugtracker.api.Payload.BugResponse;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -25,6 +26,9 @@ public class BugService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AuthenticationFacade authenticationFacade; // to get current user and roles
 
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DEVELOPER')")
 //    public List<Bug> getAllBugs() {
@@ -52,16 +56,21 @@ public class BugService {
         bug.setTitle(request.getTitle());
         bug.setDescription(request.getDescription());
         bug.setPriority(request.getPriority());
-        bug.setStatus(request.getStatus() != null ? request.getStatus() : StatusEnum.OPEN);
+        bug.setStatus(StatusEnum.OPEN);
+        User creator = userService.findUserByUsername(creatorUsername);
+
+        bug.setReportedBy(creator);
 
         if (request.getAssigneeId() != null) {
+            if (!authenticationFacade.isCurrentUserAdmin()) {
+                throw new AccessDeniedException("Only admins can assign bugs");
+            }
             User assignee = userService.findById(request.getAssigneeId())
                     .orElseThrow(() -> new EntityNotFoundException("Assignee not found"));
             bug.setAssignee(assignee);
         }
 
         bug.setCreatedAt(OffsetDateTime.now());
-
         return createBug(bug, creatorUsername);
     }
 
@@ -78,8 +87,10 @@ public class BugService {
         bug.setDescription(request.getDescription());
         bug.setPriority(request.getPriority());
         bug.setStatus(request.getStatus());
-
         if (request.getAssigneeId() != null) {
+            if (!authenticationFacade.isCurrentUserAdmin()) {
+                throw new AccessDeniedException("Only admins can assign bugs");
+            }
             User assignee = userService.findById(request.getAssigneeId())
                     .orElseThrow(() -> new EntityNotFoundException("Assignee not found"));
             bug.setAssignee(assignee);
@@ -88,7 +99,6 @@ public class BugService {
         }
 
         bug.setUpdatedAt(OffsetDateTime.now());
-
         return bugRepository.save(bug);
     }
 
@@ -99,8 +109,24 @@ public class BugService {
         }
         bugRepository.deleteById(id);
     }
+
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
+    public List<Bug> findBugsByAssigneeUsername(String username) {
+        User assignee = userService.findUserByUsername(username);
+        return bugRepository.findByAssigneeId(assignee.getId())
+                .orElse(List.of());
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
+    public List<Bug> findBugsByReporterUsername(String username) {
+        User reporter = userService.findUserByUsername(username);
+        return bugRepository.findByReportedById(reporter.getId())
+                .orElse(List.of());
+    }
+
     public BugResponse convertToResponse(Bug bug) {
         BugResponse response = new BugResponse();
+        // existing setters
         response.setId(bug.getId());
         response.setTitle(bug.getTitle());
         response.setDescription(bug.getDescription());
@@ -110,6 +136,9 @@ public class BugService {
         response.setUpdatedAt(bug.getUpdatedAt());
         if (bug.getAssignee() != null) {
             response.setAssigneeId(bug.getAssignee().getId());
+        }
+        if (bug.getReportedBy() != null) {
+            response.setReportedByUsername(bug.getReportedBy().getUsername());
         }
         return response;
     }

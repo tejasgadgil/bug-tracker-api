@@ -8,12 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-public class UserDetailsImpl implements UserDetails {
+public record UserDetailsImpl(User user) implements UserDetails {
 
-    private final User user;
-
-    public UserDetailsImpl(User user) {
-        this.user = user;
+    public Long getId() {
+        return user.getId();
     }
 
     @Override
@@ -33,22 +31,21 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Extend logic here if you want to expire accounts
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Extend logic if you want to lock accounts
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Extend logic if needed
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
         return user.isEnabled();
     }
-
 }

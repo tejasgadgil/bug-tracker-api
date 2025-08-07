@@ -62,3 +62,19 @@ CREATE TABLE activity_log (
         REFERENCES bugs(id)
         ON DELETE CASCADE -- If a bug is deleted, its activity log is also deleted.
 );
+
+-- 1. Delete data in order to avoid FK violations
+DELETE FROM comments;
+DELETE FROM bugs;
+DELETE FROM users;
+
+-- Add reported_by_id column (non-nullable) referencing users(id)
+ALTER TABLE bugs
+ADD COLUMN reported_by_id INTEGER NOT NULL;
+
+-- Add foreign key constraint referencing users(id)
+ALTER TABLE bugs
+ADD CONSTRAINT fk_reported_by
+FOREIGN KEY (reported_by_id)
+REFERENCES users(id);
+

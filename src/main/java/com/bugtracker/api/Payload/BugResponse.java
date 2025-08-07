@@ -15,12 +15,9 @@ public class BugResponse {
     private Long assigneeId;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private String reportedByUsername;
 
     // getters/setters, constructor(s)
-
-
-
-
     public Long getId() {
         return id;
     }
@@ -83,5 +80,13 @@ public class BugResponse {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getReportedByUsername() {
+        return reportedByUsername;
+    }
+
+    public void setReportedByUsername(String reportedByUsername) {
+        this.reportedByUsername = reportedByUsername;
     }
 }

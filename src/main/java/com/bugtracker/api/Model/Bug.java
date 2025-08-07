@@ -36,6 +36,10 @@ public class Bug {
     @JoinColumn(name = "assignee_id")
     private User assignee;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reported_by_id", nullable = false, updatable = false)
+    private User reportedBy;
+
     public Bug() {
         // Default constructor
     }
@@ -102,5 +106,13 @@ public class Bug {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public User getReportedBy() {
+        return reportedBy;
+    }
+
+    public void setReportedBy(User reportedBy) {
+        this.reportedBy = reportedBy;
     }
 }

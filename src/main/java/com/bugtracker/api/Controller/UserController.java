@@ -61,6 +61,7 @@ public class UserController {
 
     private UserResponse convertToResponse(User user) {
         UserResponse response = new UserResponse();
+        response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
         // Do NOT include password or roleName here for security reasons

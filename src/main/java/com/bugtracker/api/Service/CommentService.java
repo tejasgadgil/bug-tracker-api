@@ -56,7 +56,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('DEVELOPER') and @commentRepository.findById(#id).get().user.username == authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
     public Comment updateComment(Long id, String content, String username) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with ID " + id + " does not exist."));
@@ -66,7 +66,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('DEVELOPER') and @commentRepository.findById(#id).get().user.username == authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
     public void deleteComment(Long id, String username) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with ID " + id + " does not exist."));

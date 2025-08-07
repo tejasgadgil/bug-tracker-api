@@ -1,0 +1,286 @@
+{
+  "info": {
+    "name": "Bug Tracker API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection to test User, Bug, and Comment endpoints with JWT"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "auth", "register"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"StrongPass123\",\n  \"roleName\": \"ADMIN\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"StrongPass123\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Get All Users",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        }
+      }
+    },
+    {
+      "name": "Get User by ID",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/users/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "1"]
+        }
+      }
+    },
+    {
+      "name": "Create User (Admin only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"dev1\",\n  \"email\": \"dev1@example.com\",\n  \"password\": \"Devpass123\",\n  \"roleName\": \"DEVELOPER\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Update User (Self or Admin)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/users/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "1"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"dev1updated\",\n  \"email\": \"dev1updated@example.com\",\n  \"password\": \"NewPassword123\",\n  \"roleName\": \"DEVELOPER\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete User (Admin only)",
+      "request": {
+        "method": "DELETE",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/users/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "1"]
+        }
+      }
+    },
+    {
+      "name": "Create Bug (Admin or Developer)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/bugs",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "bugs"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Cannot log in\",\n  \"description\": \"User cannot log in with correct credentials.\",\n  \"status\": \"OPEN\",\n  \"priority\": \"HIGH\"\n}"
+        }
+      }
+    },
+    {
+      "name": "List Bugs (Admin or Developer)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/bugs",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "bugs"]
+        }
+      }
+    },
+    {
+      "name": "Get Bug by ID (Admin or Developer)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/bugs/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "bugs", "1"]
+        }
+      }
+    },
+    {
+      "name": "Update Bug (Admin or Developer)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/bugs/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "bugs", "1"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Cannot login - updated\",\n  \"description\": \"Updated description.\",\n  \"status\": \"IN_PROGRESS\",\n  \"priority\": \"HIGH\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete Bug (Admin only)",
+      "request": {
+        "method": "DELETE",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/bugs/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "bugs", "1"]
+        }
+      }
+    },
+    {
+      "name": "Create Comment (Admin or Developer)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/comments",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "comments"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bugId\": 1,\n  \"content\": \"I am also facing this issue.\"\n}"
+        }
+      }
+    },
+    {
+      "name": "List Comments By Bug (Admin or Developer)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/comments/bug/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "comments", "bug", "1"]
+        }
+      }
+    },
+    {
+      "name": "Update Comment (Owner or Admin)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/comments/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "comments", "1"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"Updated comment content.\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete Comment (Owner or Admin)",
+      "request": {
+        "method": "DELETE",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" } ],
+        "url": {
+          "raw": "http://localhost:8080/api/comments/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "comments", "1"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "" }
+  ]
+}

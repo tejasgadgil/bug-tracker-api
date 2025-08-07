@@ -62,4 +62,25 @@ public class BugController {
         return ResponseEntity.ok(new MessageResponse("Bug deleted successfully"));
     }
 
+    @GetMapping("/{id}/assigned")
+    public ResponseEntity<List<BugResponse>> getBugsAssignedToUser(Authentication auth) {
+        String username = auth.getName();
+        List<Bug> bugs = bugService.findBugsByAssigneeUsername(username);
+        List<BugResponse> responses = bugs.stream()
+                .map(bugService::convertToResponse)
+                .toList();
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/{id}/reported")
+    public ResponseEntity<List<BugResponse>> getBugsReportedByUser(Authentication auth) {
+        String username = auth.getName();
+        List<Bug> bugs = bugService.findBugsByReporterUsername(username);
+        List<BugResponse> responses = bugs.stream()
+                .map(bugService::convertToResponse)
+                .toList();
+        return ResponseEntity.ok(responses);
+    }
+
+
 }
